@@ -1,0 +1,4 @@
+node_modules/
+coverage/
+.vscode/doc/doc-docker-mongo.rtf
+.vscode/doc/doc-api.rtf

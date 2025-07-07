@@ -1,0 +1,205 @@
+DOC API consultas:
+
+get all 
+"https://v3.football.api-sports.io/fixtures?live=all"
+
+próximas, não disponível no plano free
+https://v3.football.api-sports.io/fixtures?next=15
+
+
+https://dashboard.api-football.com/soccer/tester
+https://stackoverflow.com/questions/5643321/how-to-make-remote-rest-call-inside-node-js-any-curl
+
+---------------------------------
+Node basic install dependencies
+---------------------------------
+npm init -y
+npm init --yes
+npm init es6 -y
+//não precisa ficar reiniciando o server
+npm i -g nodemon
+npm install mongodb
+npm i express body-parser cookie-parser compression cors
+
+//Não consegui usar o typescript
+npm i -D @types/express @types/body-parser @types/cookie-parser @types/compression @types/cors
+
+Executar node: 
+nodemon index.js
+---------------------------------
+Node additional dependencies
+---------------------------------
+#validate data
+npm i joi
+
+#log api transaction
+npm i morgan
+
+#configuração do projeto
+npm i config
+
+#debug 
+npm i debug
+
+#criar templates html
+npm i pug
+
+---------------------------------
+typescript
+---------------------------------
+#instalar typescript
+npm install -D typescript
+npm install -D ts-node
+
+---------------------------------
+Setar variáveis de ambiente:
+---------------------------------
+Press Win button, type env or environment > Enter > Open "Edit System Environment Variables"
+Click on "Environment Variables" button at the bottom of dialog. See below image.
+On "System Variables" (lower span), click on "Path" to edit.
+REINICIAR VSCODE
+
+---------------------------------
+Docker
+---------------------------------
+#verifica as imagens
+docker images
+
+#verifica as imagens que estão rodando
+docker ps
+
+---------------------------------
+Mongodb
+---------------------------------
+npm install mongodb
+npm i mongoose
+
+MongoDB Compass - Interface para ver os bancos de dados
+https://www.mongodb.com/try/download/compass
+
+
+
+PROCEDIMENTOS:
+//Criar variable de ambiente: MONGOD_CONNECT_URI_DEV
+mongodb://mongodb:password@localhost:27017/equiposfutbol?authSource=admin
+
+#roda o container expondo a porta - se nao encontrar a imagem, vai baixar uma. No caso, login e senha estão como mongodb e password
+docker run --name mongodb-futbol -p 27017:27017 -e MONGODB_INITDB_ROOT_USERNAME=mongodb -e MONGODB_INITDB_ROOT_PASSWORD=password -d mongodb/mongodb-community-server:7.0.0-ubi8
+
+
+#inicia sem login e senha
+docker run --name mongodb-futbol -p 27017:27017 -d mongodb/mongodb-community-server:7.0.0-ubi8
+
+#test the connection
+docker exec -it mongodb-futbol mongosh --username mongodb --password password
+
+show dbs
+
+#create database
+use blog
+
+#create collections (sql table) from scratch
+db.createCollection("posts")
+
+#create and insert data
+db.posts.insertOne(object)
+
+db.posts.insertOne({
+  title: "Post Title 1",
+  body: "Body of post.",
+  category: "News",
+  likes: 1,
+  tags: ["news", "events"],
+  date: Date()
+})
+
+#select
+db.posts.find()
+db.posts.find( {category: "News"} )
+db.posts.find({}, {title: 1, date: 1})
+db.posts.find({}, {_id: 0, title: 1, date: 1})
+
+#update
+db.posts.updateOne( { title: "Post Title 1" }, { $set: { likes: 2 } } ) 
+
+#update or insert if not
+db.posts.updateOne( 
+  { title: "Post Title 5" }, 
+  {
+    $set: 
+      {
+        title: "Post Title 5",
+        body: "Body of post.",
+        category: "Event",
+        likes: 5,
+        tags: ["news", "events"],
+        date: Date()
+      }
+  }, 
+  { upsert: true }
+)
+
+
+#delete
+db.posts.deleteOne({ title: "Post Title 5" })
+
+db.posts.deleteMany({ category: "Technology" })
+
+---------------------------------
+Node Docker
+---------------------------------
+Executar os comandos de dentro do backend em NodeJs:
+docker init
+
+Os arquivos serao criados: 
+docker compose up --build
+
+---------------------------------
+GIT
+---------------------------------
+git push -u origin main
+
+---------------------------------
+Config 
+---------------------------------
+definir 2 arquivos: custom-environment-variable.json
+{
+  "privateKey-externalapi": "futbol_external_PrivateKey",
+  "jwtPrivateKey": "futbol_jwtPrivateKey",
+  "db": "MONGOD_CONNECT_URI_DEV",
+  "test": "mock"
+}
+e default.json
+{
+  "privateKey-externalapi": "",
+  "jwtPrivateKey": "",
+  "db": "",
+  "test": ""
+}
+
+Criar variáveis de ambiente com os nomes que estão apontando
+neste arquivo. Será retorno o valor.
+
+Por exemplo: 
+futbol_external_PrivateKey=1234
+mock=true
+
+ao usar 
+const mock = config.get('test');
+o valor do mock será true
+
+const chave = config.get('privateKey-externalapi');
+o valor da chave será 1234
+
+---------------------------------
+Teste
+---------------------------------
+npm i jest --save-dev
+npm i supertest --save-dev
+
+change in pachage.json
+   "scripts": {
+      "test": "jest"
+   },
+   
+precisa ter a variável de ambiente NODE_ENV: development

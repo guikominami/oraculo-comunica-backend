@@ -1,0 +1,4 @@
+{
+  "db": "MONGOD_CONNECT_URI_PROD",
+  "jwtPrivateKey": "oraculocomunica_jwtPrivateKey"
+}

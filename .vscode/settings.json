@@ -1,0 +1,26 @@
+{
+  "editor.fontSize": 14,
+  "editor.formatOnSave": true,
+  "prettier.tabWidth": 2,
+  "indentRainbow.ignoreErrorLanguages": ["markdown", "python"],
+  "terminal.integrated.tabs.enableAnimation": false,
+  "editor.guides.bracketPairs": true,
+  "editor.bracketPairColorization.independentColorPoolPerBracketType": false,
+  "workbench.colorCustomizations": {},
+  "editor.inlineSuggest.enabled": true,
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "git.autofetch": true,
+  "editor.formatOnType": true,
+  "css.lint.emptyRules": "error",
+  "editor.formatOnPaste": true,
+  "html.format.templating": true,
+  "emmet.triggerExpansionOnTab": true,
+  "editor.fontWeight": "normal",
+  "eslint.codeActionsOnSave.rules": null,
+  "editor.wordWrap": "wordWrapColumn"
+}
