@@ -3,9 +3,9 @@ const express = require("express");
 const app = express();
 
 require("./startup/logging")();
-require("./startup/routes")(app);
 require("./startup/db")();
 require("./startup/config")();
+require("./startup/routes")(app);
 require("./startup/validation");
 
 const server = app.listen(3000, () => console.log("Listening on port 3000"));
