@@ -10,6 +10,9 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/languageid/:id", async (req, res) => {
+  const { error } = validate(req.params.id);
+  if (error) return res.status(400).send({ error: error.details[0].message });
+
   const words = await Word.find({ "language._id": req.params.id });
   res.send(words);
 });

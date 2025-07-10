@@ -8,6 +8,13 @@ router.get("/", async (req, res) => {
   res.send(translations);
 });
 
+router.get("/wordId/:id", async (req, res) => {
+  const translations = await Translation.find({
+    "word._id": req.params.id,
+  });
+  res.send(translations);
+});
+
 router.post("/", async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send({ error: error.details[0].message });
