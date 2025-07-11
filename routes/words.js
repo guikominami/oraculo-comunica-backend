@@ -22,7 +22,10 @@ router.post("/", async (req, res) => {
   if (!language) return res.status(404).send("Invalid language");
 
   const word = await Word.findOne({ word: req.body.word });
-  if (word) return res.status(404).send("Word already registered.");
+  if (word)
+    return res
+      .status(400)
+      .send({ message: "Word already registered.", wordId: word._id });
 
   let newWord = new Word({
     word: req.body.word,
