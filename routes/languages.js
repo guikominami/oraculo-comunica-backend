@@ -15,7 +15,10 @@ router.post("/", async (req, res) => {
 
   const language = await Language.findOne({ name: req.body.name });
   if (language)
-    return res.status(400).send({ message: "Language already registered." });
+    return res.status(400).send({
+      message: "Language already registered.",
+      languageId: language._id,
+    });
 
   let newLanguage = new Language({
     name: req.body.name,
