@@ -4,28 +4,22 @@ const Joi = require("joi");
 const mongoose = require("mongoose");
 
 const languageSchema = new mongoose.Schema({
-   name: {
-      type: String,
-      required: true,
-      minlength: 2,
-      maxlength: 255,
-   },
-   acronym: {
-      type: String,
-      required: true,
-      length: 2,
-   },
+  name: {
+    type: String,
+    required: true,
+    minlength: 2,
+    maxlength: 255,
+  },
 });
 
 const Language = mongoose.model("Language", languageSchema);
 
 function validateLanguage(language) {
-   const schema = Joi.object({
-      name: Joi.string().min(2).max(50).required(),
-      acronym: Joi.string().min(2).required(),
-   });
+  const schema = Joi.object({
+    name: Joi.string().min(2).max(50).required(),
+  });
 
-   return schema.validate(language);
+  return schema.validate(language);
 }
 
 exports.languageSchema = languageSchema;

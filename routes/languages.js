@@ -22,7 +22,6 @@ router.post("/", async (req, res) => {
 
   let newLanguage = new Language({
     name: req.body.name,
-    acronym: req.body.acronym,
   });
   newLanguage = await newLanguage.save();
 
@@ -36,7 +35,6 @@ router.put("/:id", validateObjectId, async (req, res) => {
 
   const language = await Language.findByIdAndUpdate(req.params.id, {
     name: req.body.name,
-    acronym: req.body.acronym,
   });
 
   if (!language)

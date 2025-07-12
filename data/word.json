@@ -12,3 +12,35 @@
     "languageId": "686c0a872a581a32194a2674"
   }
 ]
+
+[
+  {
+    "word": "povo",
+    "language": "Terena",
+    "translations": [
+      { "word": "povo1", "language": "1" }
+      { "word": "povo2", "language": "2" }
+    ]
+  }
+]
+
+[
+  {
+    "word": "povo",
+    "language": "Terena",
+    "translations": [
+      { "word": "povo1", "language": "1" }
+      { "word": "povo3", "language": "3" }
+    ]
+  }
+]
+
+{
+  "wordId": "686c0b8c186741408edab0c8",
+	"translations": [
+      "686c0b93186741408edab0cd", 
+      "686c0b80186741408edab0c3"
+    ]
+}
+
+

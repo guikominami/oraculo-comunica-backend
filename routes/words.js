@@ -21,8 +21,12 @@ router.post("/", async (req, res) => {
   const language = await Language.findById(req.body.languageId);
   if (!language) return res.status(404).send("Invalid language");
 
-  const word = await Word.findOne({ word: req.body.word });
-  if (word)
+  const word = await Word.find({
+    word: req.body.word,
+    "language._id": language._id,
+  });
+
+  if (word.length > 0)
     return res
       .status(400)
       .send({ message: "Word already registered.", wordId: word._id });

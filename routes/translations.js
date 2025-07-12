@@ -16,33 +16,58 @@ router.get("/wordId/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+  let translation;
+
   const { error } = validate(req.body);
   if (error) return res.status(400).send({ error: error.details[0].message });
 
+  //checar se a palavra chave da tradução existe na base de dados
   const wordMain = await Word.findById(req.body.wordId);
+
   if (!wordMain)
     return res.status(400).send("The main word is not registered.");
 
-  const wordMainId = await Translation.findById(wordMain._id);
-  if (wordMainId)
-    return res
-      .status(400)
-      .send("The word is already registered in translation.");
-
-  const translations = await Word.find({
+  //checar se as palavras que serão traduzidas existem na base de dados
+  const newTranslations = await Word.find({
     _id: { $in: req.body.translations },
   });
 
-  if (translations.length === 0)
+  if (newTranslations.length === 0)
     return res.status(400).send("Invalid translations.");
 
-  let translation = new Translation({
-    word: wordMain,
-    translations: translations,
-  });
+  const wordMainId = await Translation.find({ "word._id": wordMain._id });
 
-  translation = await translation.save();
-  res.send(translation);
+  //a palavra chave não existe ainda na base de traduções
+  if (wordMainId.length === 0) {
+    translation = new Translation({
+      word: wordMain,
+      translations: newTranslations,
+    });
+
+    translation = await translation.save();
+    res.send(translation);
+  }
+  //a palavra chave existe na base de traduções
+  else {
+    //checar se a nova tradução já existe na lista de traduções do id da tradução (não incluir a mesma tradução)
+    const wordTranslationId = await Translation.find({
+      _id: wordMainId,
+      "translations._id": { $in: req.body.translations },
+    });
+
+    console.log(wordTranslationId);
+
+    if (wordTranslationId.length === 0) {
+      translation = await Translation.findByIdAndUpdate(wordMainId, {
+        $push: {
+          translations: newTranslations,
+        },
+      });
+      res.send(translation);
+    } else {
+      res.send("Tradução já cadastrada para essa palavra.");
+    }
+  }
 });
 
 router.delete("/:id", async (req, res) => {
