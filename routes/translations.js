@@ -37,8 +37,20 @@ router.post("/", async (req, res) => {
 
   const wordMainId = await Translation.find({ "word._id": wordMain._id });
 
-  //a palavra chave não existe ainda na base de traduções
-  if (wordMainId.length === 0) {
+  //checar se a nova tradução já existe na lista de traduções do id da tradução (não incluir a mesma tradução)
+  const wordTranslationId = await Translation.find({
+    _id: wordMainId,
+    "translations._id": { $in: req.body.translations },
+  });
+
+  if (wordTranslationId.length === 0) {
+    translation = await Translation.findByIdAndUpdate(wordMainId, {
+      $push: {
+        translations: newTranslations,
+      },
+    });
+    res.send(translation);
+  } else {
     translation = new Translation({
       word: wordMain,
       translations: newTranslations,
@@ -46,27 +58,6 @@ router.post("/", async (req, res) => {
 
     translation = await translation.save();
     res.send(translation);
-  }
-  //a palavra chave existe na base de traduções
-  else {
-    //checar se a nova tradução já existe na lista de traduções do id da tradução (não incluir a mesma tradução)
-    const wordTranslationId = await Translation.find({
-      _id: wordMainId,
-      "translations._id": { $in: req.body.translations },
-    });
-
-    console.log(wordTranslationId);
-
-    if (wordTranslationId.length === 0) {
-      translation = await Translation.findByIdAndUpdate(wordMainId, {
-        $push: {
-          translations: newTranslations,
-        },
-      });
-      res.send(translation);
-    } else {
-      res.send("Tradução já cadastrada para essa palavra.");
-    }
   }
 });
 
