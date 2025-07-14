@@ -1,46 +1,27 @@
 [
   {
-    "word": "water",
-    "languageId": "686c0a872a581a32194a2677"
+    "Português BR": "água",
+    "Inglês": "water",
+    "Espanhol": "auga"
   },
   {
-    "word": "água",
-    "languageId": "686c0a872a581a32194a2671"
+    "Português BR": "terra",
+    "Inglês": "land",
+    "Espanhol": "tierra"
   },
   {
-    "word": "auga",
-    "languageId": "686c0a872a581a32194a2674"
-  }
-]
-
-[
+    "Português BR": "cadeira",
+    "Inglês": "chair",
+    "Espanhol": "silla"
+  },
   {
-    "word": "povo",
-    "language": "Terena",
-    "translations": [
-      { "word": "povo1", "language": "1" }
-      { "word": "povo2", "language": "2" }
-    ]
-  }
-]
-
-[
+    "Português BR": "maleta",
+    "Inglês": "briefcase",
+    "Espanhol": "maletín"
+  },
   {
-    "word": "povo",
-    "language": "Terena",
-    "translations": [
-      { "word": "povo1", "language": "1" }
-      { "word": "povo3", "language": "3" }
-    ]
+    "Português BR": "computador",
+    "Inglês": "computer",
+    "Espanhol": "ordenador"
   }
 ]
-
-{
-  "wordId": "686c0b8c186741408edab0c8",
-	"translations": [
-      "686c0b93186741408edab0cd", 
-      "686c0b80186741408edab0c3"
-    ]
-}
-
-
