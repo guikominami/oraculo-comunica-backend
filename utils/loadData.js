@@ -1,16 +1,16 @@
-const data = require("../data/word.json");
+// const data = require("../data/word.json");
 const { Language } = require("../models/language");
 const { Word } = require("../models/word");
 
-async function processData() {
+async function processData(data) {
   const languages = Object.keys(data[0]);
   let languagesData = [];
-
-  console.log("insert languages");
+  let statusLoadData = [];
 
   for (const key in languages) {
     const responseLanguage = await insertLanguage(languages[key]);
-    console.log(responseLanguage);
+
+    statusLoadData.push(responseLanguage);
 
     let newLanguage = {};
     const newLanguageId = responseLanguage.languageId;
@@ -20,11 +20,6 @@ async function processData() {
 
     languagesData.push(newLanguage);
   }
-
-  console.log(languagesData);
-
-  console.log("---------------------------");
-  console.log("insert words");
 
   for (var i = 0; i < data.length; i++) {
     var obj = data[i];
@@ -40,14 +35,17 @@ async function processData() {
         word,
         languagesData[index].languageId
       );
-      console.log(responseWord);
+
+      statusLoadData.push(responseWord);
     }
   }
+
+  return statusLoadData;
 }
 
 async function insertLanguage(languageName) {
   try {
-    const language = await Language.findOne({ name: languageName }).exec();
+    const language = await Language.findOne({ name: languageName });
 
     if (language)
       return {
@@ -60,46 +58,55 @@ async function insertLanguage(languageName) {
       name: languageName,
     });
 
-    newLanguage = newLanguage.save();
+    newLanguage = await newLanguage.save();
+
     return {
       message: "Language registered successfully.",
       languageId: newLanguage._id,
+      languageName: newLanguage.name,
     };
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 }
 
 async function insertWord(newWord, languageId) {
-  const language = await Language.findById(languageId);
-  if (!language)
+  try {
+    const language = await Language.findById(languageId);
+    if (!language)
+      return {
+        message: "Invalid languageId" + languageId,
+      };
+
+    const word = await Word.findOne({
+      word: newWord,
+      "language._id": language._id,
+    });
+
+    if (word)
+      return {
+        message: "Word already registered.",
+        wordId: word._id,
+        word: word.word,
+      };
+
+    let newWordData = new Word({
+      word: newWord,
+      language: {
+        _id: language._id,
+        name: language.name,
+      },
+    });
+
+    newWordData = await newWordData.save();
     return {
-      message: "Invalid languageId" + languageId,
+      message: "Word registered successfully.",
+      wordId: newWordData._id,
+      word: newWordData.word,
     };
-
-  console.log(newWord);
-  console.log(language._id);
-
-  const word = await Word.find({
-    word: newWord,
-    "language._id": language._id,
-  });
-
-  console.log(word);
-
-  if (word.length > 0)
-    return { message: "Word already registered.", wordId: word._id };
-
-  let newWordData = new Word({
-    word: word,
-    languageId: language._id,
-  });
-
-  newWordData = await newWordData.save();
-  return { message: "Word registered successfully.", wordId: newWordData._id };
+  } catch (error) {
+    throw error;
+  }
 }
 
 exports.processData = processData;
-
-//só chamar a função se chamar a API
-//loadData();

@@ -3,8 +3,8 @@ const router = express.Router();
 const { processData } = require("../utils/loadData");
 
 router.post("/", async (req, res) => {
-  await processData(req.body);
-  res.send(req.body);
+  const response = await processData(req.body);
+  res.send(response);
 });
 
 module.exports = router;

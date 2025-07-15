@@ -12,15 +12,10 @@ const wordSchema = new mongoose.Schema({
     minlength: 1,
     maxlength: 100,
   },
-  languageId: {
-    type: Schema.Types.ObjectId,
-    ref: "Language",
+  language: {
+    type: languageSchema,
     required: true,
   },
-  // language: {
-  //   type: languageSchema,
-  //   required: true,
-  // },
 });
 
 const Word = mongoose.model("Word", wordSchema);
