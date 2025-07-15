@@ -38,12 +38,12 @@ router.post("/", async (req, res) => {
   const wordMainId = await Translation.find({ "word._id": wordMain._id });
 
   //checar se a nova tradução já existe na lista de traduções do id da tradução (não incluir a mesma tradução)
-  const wordTranslationId = await Translation.find({
+  const wordTranslationId = await Translation.findOne({
     _id: wordMainId,
     "translations._id": { $in: req.body.translations },
   });
 
-  if (wordTranslationId.length === 0) {
+  if (wordTranslationId) {
     translation = await Translation.findByIdAndUpdate(wordMainId, {
       $push: {
         translations: newTranslations,
