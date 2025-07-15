@@ -3,7 +3,7 @@ const auth = require("../routes/auth");
 const users = require("../routes/users");
 const languages = require("../routes/languages");
 const words = require("../routes/words");
-const loadData = require("../routes/loadData");
+const dataJson = require("../routes/dataJson");
 const translations = require("../routes/translations");
 const error = require("../middleware/error");
 const cors = require("../middleware/cors");
@@ -17,7 +17,7 @@ module.exports = function (app) {
   app.use("/api/languages", languages);
   app.use("/api/words", words);
   app.use("/api/translations", translations);
-  app.use("/api/loadData", loadData);
+  app.use("/api/dataJson", dataJson);
 
   //because there is an next if there is error
   app.use(error);

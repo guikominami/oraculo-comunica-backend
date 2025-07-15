@@ -1,14 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const { processData } = require("../utils/loadData");
 
 router.post("/", async (req, res) => {
+  await processData(req.body);
   res.send(req.body);
-
-  const data = req.body;
-
-  for (item in data) {
-    console.log(item);
-  }
 });
 
 module.exports = router;

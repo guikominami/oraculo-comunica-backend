@@ -1,7 +1,8 @@
 const Joi = require("joi");
 Joi.objectId = require("joi-objectid")(Joi);
 const { required, func } = require("joi");
-const mongoose = require("mongoose");
+const mongoose = require("mongoose"),
+  Schema = mongoose.Schema;
 const { languageSchema } = require("./language");
 
 const wordSchema = new mongoose.Schema({
@@ -11,10 +12,15 @@ const wordSchema = new mongoose.Schema({
     minlength: 1,
     maxlength: 100,
   },
-  language: {
-    type: languageSchema,
+  languageId: {
+    type: Schema.Types.ObjectId,
+    ref: "Language",
     required: true,
   },
+  // language: {
+  //   type: languageSchema,
+  //   required: true,
+  // },
 });
 
 const Word = mongoose.model("Word", wordSchema);

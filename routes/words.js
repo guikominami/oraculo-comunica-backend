@@ -23,7 +23,7 @@ router.post("/", async (req, res) => {
 
   const word = await Word.find({
     word: req.body.word,
-    "language._id": language._id,
+    languageId: language._id,
   });
 
   if (word.length > 0)
@@ -33,12 +33,16 @@ router.post("/", async (req, res) => {
 
   let newWord = new Word({
     word: req.body.word,
-    language: {
-      _id: language._id,
-      name: language.name,
-      acronym: language.acronym,
-    },
+    languageId: language._id,
   });
+
+  // let newWord = new Word({
+  //   word: req.body.word,
+  //   language: {
+  //     _id: language._id,
+  //     name: language.name,
+  //   },
+  // });
 
   newWord = await newWord.save();
   res.send(newWord);
