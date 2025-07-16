@@ -8,80 +8,51 @@ async function processData(data) {
   let languagesData = [];
   let statusLoadData = [];
 
-  for (const key in languages) {
+  for (var key in languages) {
     const responseLanguage = await insertLanguage(languages[key]);
 
     statusLoadData.push(responseLanguage);
 
-    let newLanguage = {};
-    const newLanguageId = responseLanguage.languageId;
-    //newLanguage[languages[key]] = newLanguageId;
-    newLanguage["languageName"] = languages[key];
-    newLanguage["languageId"] = newLanguageId;
+    let newLanguage = responseLanguage.language;
 
     languagesData.push(newLanguage);
   }
 
-  let translationData = [];
+  let translationWordGroup = [];
 
   for (var i = 0; i < data.length; i++) {
-    var wordGroup = data[i];
+    const wordGroup = data[i];
 
     let newTranslation = [];
 
     //grupo de palavras
-    for (const key in wordGroup) {
+    for (var key in wordGroup) {
       var word = wordGroup[key];
 
-      const index = languagesData.findIndex(
-        (item) => item.languageName === key
-      );
+      const index = languagesData.findIndex((item) => item.name === key);
 
-      const languageId = languagesData[index].languageId;
+      const language = languagesData[index];
 
-      const responseWord = await insertWord(word, languageId);
+      const responseWord = await insertWord(word, language);
 
       statusLoadData.push(responseWord);
 
-      //newTranslation["wordID"] = responseWord.wordId;
       newTranslation.push(responseWord.word);
     }
 
-    translationData.push(newTranslation);
+    translationWordGroup.push(newTranslation);
   }
 
-  //console.log(translationData);
+  //adicionar as traduções em cada palavra
+  for (var i = 0; i < translationWordGroup.length; i++) {
+    const wordGroup = translationWordGroup[i];
 
-  for (var i = 0; i < translationData.length; i++) {
-    var wordGroup = translationData[i];
-
-    //console.log("traducao agrupada", wordGroup);
-
-    for (const key in wordGroup) {
+    for (var key in wordGroup) {
       const word = wordGroup[key];
 
-      //procurar se a palavra existe na tabela traducao
-      const wordMain = await Translation.findOne({ "word._id": word._id });
+      const responseTranslation = await insertTranslation(word, wordGroup);
 
-      if (!wordMain) {
-        const newTranslations = [];
-        for (const key in wordGroup) {
-          const wordTranslation = wordGroup[key];
-
-          console.log("wordTranslation", wordTranslation);
-          console.log("word", word);
-
-          if (wordTranslation._id !== word._id)
-            newTranslations.push(wordTranslation);
-        }
-
-        translation = new Translation({
-          word: word,
-          translations: newTranslations,
-        });
-
-        translation = await translation.save();
-      }
+      statusLoadData.push(responseTranslation);
     }
   }
 
@@ -95,8 +66,7 @@ async function insertLanguage(languageName) {
     if (language)
       return {
         message: "Language already registered.",
-        languageId: language._id,
-        languageName: language.name,
+        language: language,
       };
 
     let newLanguage = new Language({
@@ -107,21 +77,20 @@ async function insertLanguage(languageName) {
 
     return {
       message: "Language registered successfully.",
-      languageId: newLanguage._id,
-      languageName: newLanguage.name,
+      language: newLanguage,
     };
   } catch (error) {
     throw error;
   }
 }
 
-async function insertWord(newWord, languageId) {
+async function insertWord(newWord, language) {
   try {
-    const language = await Language.findById(languageId);
-    if (!language)
-      return {
-        message: "Invalid languageId" + languageId,
-      };
+    // const language = await Language.findById(languageId);
+    // if (!language)
+    //   return {
+    //     message: "Invalid languageId" + languageId,
+    //   };
 
     const word = await Word.findOne({
       word: newWord,
@@ -136,10 +105,7 @@ async function insertWord(newWord, languageId) {
 
     let newWordData = new Word({
       word: newWord,
-      language: {
-        _id: language._id,
-        name: language.name,
-      },
+      language: language,
     });
 
     newWordData = await newWordData.save();
@@ -147,6 +113,51 @@ async function insertWord(newWord, languageId) {
       message: "Word registered successfully.",
       word: newWordData,
     };
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function insertTranslation(word, wordGroup) {
+  try {
+    //procurar se a palavra existe na tabela traducao
+    const wordMain = await Translation.findOne({ "word._id": word._id });
+
+    if (!wordMain) {
+      const newTranslations = [];
+
+      //gravar todas as palavras da matriz como tradução filha da palavra
+      for (const key in wordGroup) {
+        const wordTranslation = wordGroup[key];
+
+        //não gravar a mesma palavra como tradução
+        if (wordTranslation._id !== word._id)
+          newTranslations.push(wordTranslation);
+      }
+
+      let newTranslation = new Translation({
+        word: word,
+        translations: newTranslations,
+      });
+
+      newTranslation = await newTranslation.save();
+      return {
+        message: "Translation registered successfully.",
+        translation: newTranslation,
+      };
+    } else {
+      console.log("palavra já existe");
+      //gravar todas as palavras da matriz como tradução filha da palavra
+      for (const key in wordGroup) {
+        const wordTranslation = wordGroup[key];
+
+        //não gravar a mesma palavra como tradução
+        return {
+          message: "Translation already registered.",
+          translation: wordMain,
+        };
+      }
+    }
   } catch (error) {
     throw error;
   }
