@@ -86,12 +86,6 @@ async function insertLanguage(languageName) {
 
 async function insertWord(newWord, language) {
   try {
-    // const language = await Language.findById(languageId);
-    // if (!language)
-    //   return {
-    //     message: "Invalid languageId" + languageId,
-    //   };
-
     const word = await Word.findOne({
       word: newWord,
       "language._id": language._id,
@@ -123,6 +117,7 @@ async function insertTranslation(word, wordGroup) {
     //procurar se a palavra existe na tabela traducao
     const wordMain = await Translation.findOne({ "word._id": word._id });
 
+    //se a palavra não existir como principal na lista de traduções
     if (!wordMain) {
       const newTranslations = [];
 
@@ -141,21 +136,49 @@ async function insertTranslation(word, wordGroup) {
       });
 
       newTranslation = await newTranslation.save();
+
       return {
         message: "Translation registered successfully.",
         translation: newTranslation,
       };
-    } else {
-      console.log("palavra já existe");
-      //gravar todas as palavras da matriz como tradução filha da palavra
-      for (const key in wordGroup) {
-        const wordTranslation = wordGroup[key];
 
-        //não gravar a mesma palavra como tradução
-        return {
-          message: "Translation already registered.",
-          translation: wordMain,
-        };
+      //se a palavra existir como principal na lista de traduções
+    } else {
+      //procurar todas as palavras da matriz como tradução filha da palavra
+      for (const key in wordGroup) {
+        const newWordTranslation = wordGroup[key];
+
+        //procurar na tabela translation uma palavra e uma tradução em cada lista da matriz de novas traduções
+        const wordTranslation = await Translation.findOne({
+          _id: wordMain._id,
+          "translations._id": newWordTranslation._id,
+        });
+
+        if (
+          !wordTranslation &&
+          newWordTranslation._id.toString() !== wordMain.word._id.toString()
+        ) {
+          //gravar as traduções que não existem na palavra chave
+          let newTranslation = await Translation.findByIdAndUpdate(
+            wordMain._id,
+            {
+              $push: {
+                translations: newWordTranslation,
+              },
+            }
+          );
+          newTranslation = await newTranslation.save();
+
+          return {
+            message: "Translation updated successfully.",
+            translation: newTranslation,
+          };
+        } else {
+          return {
+            message: "Translation already registered.",
+            translation: newWordTranslation,
+          };
+        }
       }
     }
   } catch (error) {
