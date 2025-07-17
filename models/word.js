@@ -16,6 +16,7 @@ const wordSchema = new mongoose.Schema({
     type: languageSchema,
     required: true,
   },
+  profileId: { type: mongoose.Types.ObjectId, ref: "Profile" },
 });
 
 const Word = mongoose.model("Word", wordSchema);
@@ -24,6 +25,7 @@ function validateWord(word) {
   const schema = Joi.object({
     word: Joi.string().min(1).max(100).required(),
     languageId: Joi.objectId().required(),
+    profileId: Joi.objectId().required(),
   });
 
   return schema.validate(word);

@@ -33,10 +33,8 @@ router.post("/", async (req, res) => {
 
   let newWord = new Word({
     word: req.body.word,
-    language: {
-      _id: language._id,
-      name: language.name,
-    },
+    language: language,
+    profileId: req.body.profileId,
   });
 
   newWord = await newWord.save();

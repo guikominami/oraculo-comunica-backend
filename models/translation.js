@@ -17,6 +17,7 @@ const translationSchema = new mongoose.Schema({
       required: true,
     },
   ],
+  profileId: { type: mongoose.Types.ObjectId, ref: "Profile" },
 });
 
 const Translation = mongoose.model("Translation", translationSchema);
@@ -25,6 +26,7 @@ function validateTranslation(translation) {
   const schema = Joi.object({
     wordId: Joi.objectId().required(),
     translations: Joi.array().required(),
+    profileId: Joi.objectId().required(),
   });
 
   return schema.validate(translation);

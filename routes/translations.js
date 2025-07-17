@@ -54,6 +54,7 @@ router.post("/", async (req, res) => {
     translation = new Translation({
       word: wordMain,
       translations: newTranslations,
+      profileId: req.body.profileId,
     });
 
     translation = await translation.save();

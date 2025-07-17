@@ -1,6 +1,5 @@
-const jwt = require("jsonwebtoken");
-const config = require("config");
 const Joi = require("joi");
+Joi.objectId = require("joi-objectid")(Joi);
 const mongoose = require("mongoose");
 
 const languageSchema = new mongoose.Schema({
@@ -10,6 +9,7 @@ const languageSchema = new mongoose.Schema({
     minlength: 2,
     maxlength: 255,
   },
+  profileId: { type: mongoose.Types.ObjectId, ref: "Profile" },
 });
 
 const Language = mongoose.model("Language", languageSchema);
@@ -17,6 +17,7 @@ const Language = mongoose.model("Language", languageSchema);
 function validateLanguage(language) {
   const schema = Joi.object({
     name: Joi.string().min(2).max(50).required(),
+    profileId: Joi.objectId().required(),
   });
 
   return schema.validate(language);
