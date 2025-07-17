@@ -2,6 +2,7 @@ const { Profile } = require("../models/profile");
 const { Language } = require("../models/language");
 const { Word } = require("../models/word");
 const { Translation } = require("../models/translation");
+const { response } = require("express");
 
 async function processData(data, profileId) {
   const languages = Object.keys(data[0]);
@@ -132,6 +133,8 @@ async function insertWord(newWord, language, profileId) {
 
 async function insertTranslation(word, wordGroup, profileId) {
   try {
+    let statusTranslation = [];
+
     //procurar se a palavra existe na tabela traducao
     const wordMain = await Translation.findOne({
       "word._id": word._id,
@@ -159,10 +162,12 @@ async function insertTranslation(word, wordGroup, profileId) {
 
       newTranslation = await newTranslation.save();
 
-      return {
+      const response = {
         message: "Translation registered successfully.",
         translation: newTranslation,
       };
+
+      return response;
 
       //se a palavra existir como principal na lista de traduções
     } else {
@@ -170,43 +175,48 @@ async function insertTranslation(word, wordGroup, profileId) {
       for (const key in wordGroup) {
         const word = wordGroup[key];
 
-        //procurar na tabela translation se a palavra mãe e a tradução já foram cadastradas
-        const wordListTranslation = await Translation.findOne({
-          _id: wordMain._id,
-          "translations._id": word._id,
-          profileId: profileId,
-        });
+        if (word._id.toString() !== wordMain.word._id.toString()) {
+          const response = await updateTranslation(wordMain, word, profileId);
 
-        //Atualizar a lista de traduções se a palavra ainda não estiver gravada na lista de traduções. Não gravar a mesma palavra como tradução.
-        if (
-          !wordListTranslation &&
-          word._id.toString() !== wordMain.word._id.toString()
-        ) {
-          //gravar as traduções que não existem na palavra chave
-          let newTranslation = await Translation.findByIdAndUpdate(
-            wordMain._id,
-            {
-              $push: {
-                translations: word,
-              },
-            }
-          );
-          newTranslation = await newTranslation.save();
-
-          return {
-            message: "Translation updated successfully.",
-            translation: newTranslation,
-          };
-        } else {
-          return {
-            message: "Translation already registered.",
-            translation: wordListTranslation,
-          };
+          statusTranslation.push(response);
         }
       }
+
+      return statusTranslation;
     }
   } catch (error) {
     throw error;
+  }
+}
+
+async function updateTranslation(wordMain, word, profileId) {
+  //procurar na tabela translation se a palavra mãe
+  // e a tradução já foram cadastradas
+
+  const wordListTranslation = await Translation.findOne({
+    _id: wordMain._id,
+    "translations._id": word._id,
+  });
+
+  //Atualizar a lista de traduções se a palavra ainda não estiver gravada na lista de traduções. Não gravar a mesma palavra como tradução.
+  if (!wordListTranslation) {
+    //gravar as traduções que não existem na palavra chave
+    let newTranslation = await Translation.findByIdAndUpdate(wordMain._id, {
+      $push: {
+        translations: word,
+      },
+    });
+    newTranslation = await newTranslation.save();
+
+    return {
+      message: "Translation updated successfully.",
+      translation: newTranslation,
+    };
+  } else {
+    return {
+      message: "Translation already registered.",
+      translation: wordListTranslation,
+    };
   }
 }
 
