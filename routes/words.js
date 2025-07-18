@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/languageid/:id", async (req, res) => {
-  const words = await Word.find({ "language._id": req.params.id });
+  const words = await Word.find({ "language._id": req.params.id }).sort("word");
   res.send(words);
 });
 
