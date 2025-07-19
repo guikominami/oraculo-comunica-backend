@@ -10,7 +10,8 @@ const wordSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 1,
-    maxlength: 100,
+    maxlength: 300,
+    normalized: String,
   },
   language: {
     type: languageSchema,
