@@ -36,7 +36,12 @@ async function processData(data, profileId) {
 
     //grupo de palavras
     for (var key in wordGroup) {
-      var word = wordGroup[key];
+      const word = wordGroup[key]
+        .replace("(", "")
+        .replace(")", "")
+        .replace("¿", "")
+        .replace("¡", "")
+        .trim();
 
       const index = languagesData.findIndex((item) => item.name === key);
 

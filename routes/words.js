@@ -31,13 +31,15 @@ router.post("/", async (req, res) => {
       .status(400)
       .send({ message: "Word already registered.", wordId: word._id });
 
+  const wordNoCharacters = req.body.word
+    .replace("(", "")
+    .replace(")", "")
+    .replace("¿", "")
+    .replace("¡", "")
+    .trim();
+
   let newWord = new Word({
-    word: req.body.word
-      .replace("(", "")
-      .replace(")", "")
-      .replace("¿", "")
-      .replace("¡", "")
-      .trim(),
+    word: wordNoCharacters,
     language: language,
     profileId: req.body.profileId,
   });
