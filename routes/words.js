@@ -32,7 +32,12 @@ router.post("/", async (req, res) => {
       .send({ message: "Word already registered.", wordId: word._id });
 
   let newWord = new Word({
-    word: req.body.word,
+    word: req.body.word
+      .replace("(", "")
+      .replace(")", "")
+      .replace("¿", "")
+      .replace("¡", "")
+      .trim(),
     language: language,
     profileId: req.body.profileId,
   });
