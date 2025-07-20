@@ -17,20 +17,31 @@ async function processData(data, profileId) {
       profile: profileId,
     };
 
-  for (var key in languages) {
-    const responseLanguage = await insertLanguage(languages[key], profileId);
-
-    statusLoadData.push(responseLanguage);
-
-    let newLanguage = responseLanguage.language;
-
-    languagesData.push(newLanguage);
-  }
-
   let translationWordGroup = [];
 
   for (var i = 0; i < data.length; i++) {
     const wordGroup = data[i];
+
+    const languages = Object.keys(wordGroup);
+
+    for (var key in languages) {
+      const responseLanguage = await insertLanguage(languages[key], profileId);
+
+      statusLoadData.push(responseLanguage);
+
+      let newLanguage = responseLanguage.language;
+
+      //necessário checar em cada grupo de palavras porque o primeiro grupo pode estar em branco na tabela excel e no segundo estiver preenchido. Nesse caso, o json vem com 2 línguas no primeiro bloco e 3 línguas no segundo.
+      if (
+        languagesData.filter(
+          (item) =>
+            item._id.toString() === responseLanguage.language._id.toString()
+        ).length === 0 ||
+        languagesData.length === 0
+      ) {
+        languagesData.push(newLanguage);
+      }
+    }
 
     let newTranslation = [];
 
@@ -56,6 +67,8 @@ async function processData(data, profileId) {
 
     translationWordGroup.push(newTranslation);
   }
+
+  console.log(languagesData);
 
   //adicionar as traduções em cada palavra
   for (var i = 0; i < translationWordGroup.length; i++) {
