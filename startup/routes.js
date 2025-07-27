@@ -1,6 +1,4 @@
 const express = require("express");
-const auth = require("../routes/auth");
-const users = require("../routes/users");
 const languages = require("../routes/languages");
 const words = require("../routes/words");
 const dataJson = require("../routes/dataJson");
@@ -13,8 +11,6 @@ module.exports = function (app) {
   app.use(express.json());
   app.use(cors);
 
-  app.use("/api/auth", auth);
-  app.use("/api/users", users);
   app.use("/api/languages", languages);
   app.use("/api/words", words);
   app.use("/api/translations", translations);
