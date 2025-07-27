@@ -52,6 +52,7 @@ async function processData(data, profileId) {
         .replace(")", "")
         .replace("¿", "")
         .replace("¡", "")
+        .replace(";", "")
         .trim();
 
       const index = languagesData.findIndex((item) => item.name === key);
